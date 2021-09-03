@@ -1,4 +1,4 @@
-package filter
+package scanner
 
 import (
 	_ "embed"
