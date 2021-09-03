@@ -9,6 +9,6 @@ type Scanner interface {
 
 //Count is interface for count controll
 type Count interface {
-	Get(ctx context.Context) uint64
+	Get(ctx context.Context) (uint64, error)
 	Refresh(ctx context.Context) error
 }
