@@ -17,7 +17,10 @@ func (h *Handler) getCount(w http.ResponseWriter, r *http.Request) error {
 		Count uint64 `json:"count"`
 	}
 
-	count := h.cont.GetCount(r.Context())
+	count, err := h.cont.GetCount(r.Context())
+	if err != nil {
+		return coderror.Errorf(err, "controller: %v", err)
+	}
 
 	if err := json.NewEncoder(w).Encode(&Response{count}); err != nil {
 		return coderror.Newf(codes.JSONEncodeError, "encode json: %v", err)
