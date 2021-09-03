@@ -42,3 +42,11 @@ func Errorf(err error, format string, arg ...interface{}) error {
 
 	return fmt.Errorf(format, arg...)
 }
+
+func As(err error) (*errorWithCode, bool) {
+	if cerr := (errorWithCode{}); errors.As(err, &cerr) {
+		return &cerr, true
+	}
+
+	return nil, false
+}
