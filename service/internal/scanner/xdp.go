@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/iovisor/gobpf/bcc"
+	"github.com/kimbellG/packet-filter/service/internal/controller"
 	"github.com/kimbellG/packet-filter/service/pkg/coderror"
 	"github.com/kimbellG/packet-filter/service/pkg/codes"
 )
@@ -17,6 +18,10 @@ func NewXDPScanner(module *bcc.Module) *XDPScanner {
 	return &XDPScanner{
 		count: NewXDPCounter(bcc.NewTable(module.TableId(MapName), module)),
 	}
+}
+
+func (xs *XDPScanner) Count() controller.Count {
+	return xs.count
 }
 
 func encodeKey(key uint8) []byte {

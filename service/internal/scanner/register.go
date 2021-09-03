@@ -1,7 +1,6 @@
 package scanner
 
 import (
-	_ "embed"
 	"fmt"
 
 	"github.com/iovisor/gobpf/bcc"
@@ -15,9 +14,6 @@ import (
 */
 import "C"
 
-//go:embed xdp.c
-var source string
-
 const (
 	FnName  = "counter"
 	MapName = "pacinfo"
@@ -25,7 +21,7 @@ const (
 	countKey = "1"
 )
 
-func InitXDP(netInterface string) (*bcc.Module, error) {
+func InitXDP(netInterface string, source string) (*bcc.Module, error) {
 	module := bcc.NewModule(source, []string{
 		"-DFUNCNAME=" + FnName,
 		"-DMAPNAME=" + MapName,

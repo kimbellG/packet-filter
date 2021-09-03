@@ -23,7 +23,7 @@ func NewXDPCounter(packageInfoTable *bcc.Table) *XDPCounter {
 }
 
 func (xs *XDPCounter) Get(ctx context.Context) (uint64, error) {
-	countBytes, err := xs.getCountFromTable(xs.countKey)
+	countBytes, err := xs.getValueFromTable(xs.countKey)
 	if err != nil {
 		return 0, coderror.Errorf(err, "get count from table: %v", err)
 	}
