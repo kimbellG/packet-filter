@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"context"
+
 	"github.com/kimbellG/packet-filter/service/pkg/coderror"
 )
 
@@ -14,12 +16,12 @@ func NewController(sc Scanner) Controller {
 	}
 }
 
-func (i *interactor) GetCount() uint64 {
-	return i.sc.Count().Get()
+func (i *interactor) GetCount(ctx context.Context) uint64 {
+	return i.sc.Count().Get(ctx)
 }
 
-func (i *interactor) RefreshCount() error {
-	if err := i.sc.Count().Refresh(); err != nil {
+func (i *interactor) RefreshCount(ctx context.Context) error {
+	if err := i.sc.Count().Refresh(ctx); err != nil {
 		return coderror.Errorf(err, "scanner: %v", err)
 	}
 

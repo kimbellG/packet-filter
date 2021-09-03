@@ -1,6 +1,8 @@
 package controller
 
+import "context"
+
 type Controller interface {
-	GetCount() uint64
-	RefreshCount() error
+	GetCount(ctx context.Context) uint64
+	RefreshCount(ctx context.Context) error
 }
