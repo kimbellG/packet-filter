@@ -6,11 +6,20 @@ const (
 	Unknown Code = iota
 
 	JSONEncodeError
+
+	BCCGetFromTableError
+	BCCSetToTableError
+	BCCNilValueFromTableError
 )
 
 var statusMessages = map[Code]string{
-	Unknown:         "Unknown",
+	Unknown: "Unknown",
+
 	JSONEncodeError: "JSON Encoding Error",
+
+	BCCGetFromTableError:      "BCCGetFromTableError",
+	BCCSetToTableError:        "BCCSetToTableError",
+	BCCNilValueFromTableError: "BCCNilValueFromTableError",
 }
 
 func (c Code) Int() int {
