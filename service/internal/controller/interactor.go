@@ -16,8 +16,13 @@ func NewController(sc Scanner) Controller {
 	}
 }
 
-func (i *interactor) GetCount(ctx context.Context) uint64 {
-	return i.sc.Count().Get(ctx)
+func (i *interactor) GetCount(ctx context.Context) (uint64, error) {
+	count, err := i.sc.Count().Get(ctx)
+	if err != nil {
+		return 0, coderror.Errorf(err, "get count from scanner: %v", err)
+	}
+
+	return count, nil
 }
 
 func (i *interactor) RefreshCount(ctx context.Context) error {
