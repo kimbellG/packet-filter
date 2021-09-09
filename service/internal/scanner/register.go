@@ -15,20 +15,20 @@ import (
 import "C"
 
 const (
-	FnName  = "counter"
-	MapName = "pacinfo"
+	MainFnName = "filter_main"
 
-	countKey = "1"
+	countKey     = "1"
+	CountMapName = "pacinfo"
 )
 
 func InitXDP(netInterface string, source string) (*bcc.Module, error) {
 	module := bcc.NewModule(source, []string{
-		"-DFUNCNAME=" + FnName,
-		"-DMAPNAME=" + MapName,
+		"-DFUNCNAME=" + MainFnName,
+		"-DMAPNAME=" + CountMapName,
 		"-DCOUNTKEY=" + countKey,
 	})
 
-	fn, err := module.Load(FnName, C.BPF_PROG_TYPE_XDP, 1, 65536)
+	fn, err := module.Load(MainFnName, C.BPF_PROG_TYPE_XDP, 1, 65536)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to load xdp func in ebpf module: %v", err)
 	}

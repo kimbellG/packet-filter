@@ -16,7 +16,7 @@ type XDPScanner struct {
 
 func NewXDPScanner(module *bcc.Module) *XDPScanner {
 	return &XDPScanner{
-		count: NewXDPCounter(bcc.NewTable(module.TableId(MapName), module)),
+		count: NewXDPCounter(bcc.NewTable(module.TableId(CountMapName), module)),
 	}
 }
 
