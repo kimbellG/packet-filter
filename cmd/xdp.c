@@ -23,7 +23,7 @@
 
 
 BPF_HASH(pacinfo, u8, u64, 1);
-BPF_HASH(protocol_blacklist, u8, u8, 256); 
+BPF_HASH(protocol_blacklist, u16, u16, 256); 
 
 
 INTERNAL int count_increment()

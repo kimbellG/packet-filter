@@ -19,6 +19,8 @@ const (
 
 	countKey     = "1"
 	CountMapName = "pacinfo"
+
+	BlackListMapName = "protocol_blacklist"
 )
 
 func InitXDP(netInterface string, source string) (*bcc.Module, error) {
