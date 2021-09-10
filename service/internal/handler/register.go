@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	countPath = "/count"
+	countPath  = "/count"
+	filterPath = "/filter/{proto}"
 )
 
 func RegisterCount(router *mux.Router, cont controller.Controller) {
@@ -14,4 +15,7 @@ func RegisterCount(router *mux.Router, cont controller.Controller) {
 
 	router.HandleFunc(countPath, handler.GetCount).Methods("GET")
 	router.HandleFunc(countPath, handler.RefreshCount).Methods("DELETE")
+
+	router.HandleFunc(filterPath, handler.BlockL2Proto).Methods("GET")
+	router.HandleFunc(filterPath, handler.UnBlockL2Proto).Methods("DELETE")
 }
