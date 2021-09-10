@@ -7,8 +7,11 @@ const (
 
 	JSONEncodeError
 
+	InvalidProtocolInIP
+
 	BCCGetFromTableError
 	BCCSetToTableError
+	BCCDeleteFromTableError
 	BCCNilValueFromTableError
 )
 
@@ -17,8 +20,11 @@ var statusMessages = map[Code]string{
 
 	JSONEncodeError: "JSON Encoding Error",
 
+	InvalidProtocolInIP: "InvalidProtocolInIP",
+
 	BCCGetFromTableError:      "BCCGetFromTableError",
 	BCCSetToTableError:        "BCCSetToTableError",
+	BCCDeleteFromTableError:   "BCCDeleteFromTableError",
 	BCCNilValueFromTableError: "BCCNilValueFromTableError",
 }
 
