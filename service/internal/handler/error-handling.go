@@ -18,8 +18,13 @@ func (fn HTTPHandlerWithError) Serve(w http.ResponseWriter, r *http.Request) {
 }
 
 var httpCode = map[int]int{
-	codes.Unknown.Int():         http.StatusInternalServerError,
-	codes.JSONEncodeError.Int(): http.StatusInternalServerError,
+	codes.Unknown.Int():                   http.StatusInternalServerError,
+	codes.JSONEncodeError.Int():           http.StatusInternalServerError,
+	codes.InvalidProtocolInIP.Int():       http.StatusNotFound,
+	codes.BCCGetFromTableError.Int():      http.StatusInternalServerError,
+	codes.BCCSetToTableError.Int():        http.StatusInternalServerError,
+	codes.BCCDeleteFromTableError.Int():   http.StatusInternalServerError,
+	codes.BCCNilValueFromTableError.Int(): http.StatusInternalServerError,
 }
 
 func decodeError(err error) (string, int) {
