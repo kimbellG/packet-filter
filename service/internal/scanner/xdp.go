@@ -11,17 +11,24 @@ import (
 )
 
 type XDPScanner struct {
-	count *XDPCounter
+	count  *XDPCounter
+	filter *XDPFilter
 }
 
 func NewXDPScanner(module *bcc.Module) *XDPScanner {
 	return &XDPScanner{
-		count: NewXDPCounter(bcc.NewTable(module.TableId(MapName), module)),
+		count:  NewXDPCounter(bcc.NewTable(module.TableId(CountMapName), module)),
+		filter: NewXDPFilter(bcc.NewTable(module.TableId(BlackListMapName), module)),
 	}
 }
 
 func (xs *XDPScanner) Count() controller.Count {
 	return xs.count
+}
+
+func (xs *XDPScanner) Filter() controller.Filter {
+	return xs.filter
+
 }
 
 func encodeKey(key uint8) []byte {
