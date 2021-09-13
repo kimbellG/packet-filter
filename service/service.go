@@ -48,6 +48,7 @@ func startService(ctx context.Context, source string) {
 			log.Printf("Failed to close XDP module: %v", err)
 		}
 	}()
+	log.Printf("XDP listening on %s interface\n", interf)
 
 	router := mux.NewRouter()
 	cont := controller.NewController(scanner.NewXDPScanner(module))
