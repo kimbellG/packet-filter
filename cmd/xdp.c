@@ -7,7 +7,11 @@
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define _bpf_ntohs(x) __builtion_bswap16(x)
+#define __bpf_htons(x) __builtin_bswap16(x)
+
 #define _bpf_constant_ntohs(x) ___constant_swab16(x)
+# define __bpf_constant_htons(x) ___constant_swab16(x)
+
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #define _bpf_ntohs(x) (x)
 #define _bpf_constant_ntohs(x)
@@ -26,7 +30,7 @@ BPF_HASH(pacinfo, u8, u64, 1);
 BPF_HASH(protocol_blacklist, u16, u16, 256); 
 
 
-INTERNAL int count_increment()
+INTERNAL void count_increment()
 {
 	u8 count = COUNTKEY;
 	u64 zero = 0;
@@ -39,9 +43,13 @@ INTERNAL int count_increment()
 
 INTERNAL int process_ip(struct iphdr *ip, void *data_end)
 {
-	u8 *val = protocol_blacklist.lookup(&ip->protocol);
+	bpf_trace_printk("received ip packcage. ID of next protocol: 0x%x, icmp: 0x%x", ip->protocol);
+
+	u16 id = ip->protocol;
+	u16 *val = protocol_blacklist.lookup(&id);
 	if (val)
 	{
+		bpf_trace_printk("drop package");
 		return XDP_DROP;
 	}
 
@@ -50,6 +58,7 @@ INTERNAL int process_ip(struct iphdr *ip, void *data_end)
 
 INTERNAL int process_ether(struct ethhdr *ether, void *data_end)
 {
+	bpf_trace_printk("received ethernet package. ID of next proto: 0x%x", ether->h_proto);
 
 	if (ether->h_proto != bpf_ntohs(ETH_P_IP))
 	{
