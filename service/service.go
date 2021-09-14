@@ -30,10 +30,10 @@ func Run(source string) {
 		log.Printf("system call: %v", oscall)
 	}()
 
-	startService(ctx, source)
+	StartService(ctx, source)
 }
 
-func startService(ctx context.Context, source string) {
+func StartService(ctx context.Context, source string) {
 	if err := initConfig(); err != nil {
 		log.Fatalf("Failed to init config: %v", err)
 	}
@@ -66,7 +66,7 @@ func startService(ctx context.Context, source string) {
 		}
 	}()
 
-	fmt.Printf("Server start listenning on %v", srv.Addr)
+	fmt.Printf("Server start listenning on %v\n", srv.Addr)
 	<-ctx.Done()
 	fmt.Println("Server start gracefull shutdown")
 
