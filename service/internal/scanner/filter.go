@@ -1,7 +1,6 @@
 package scanner
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	"github.com/iovisor/gobpf/bcc"
@@ -46,8 +45,8 @@ func getIDOfProtocol(proto controller.IPProto) ([]byte, error) {
 		return nil, coderror.New(codes.InvalidProtocolInIP, fmt.Errorf("protocol with id(%v) don't encapsulated in ip protocol", proto))
 	}
 
-	BGID := make([]byte, 16)
-	binary.BigEndian.PutUint16(BGID, id)
+	BGID := make([]byte, 2)
+	bcc.GetHostByteOrder().PutUint16(BGID, id)
 
 	return BGID, nil
 }
@@ -68,8 +67,8 @@ func (xf *XDPFilter) Block(protocol controller.IPProto) error {
 		return coderror.Errorf(err, "get ip id of protocol: %v", err)
 	}
 
-	value := make([]byte, 16)
-	binary.BigEndian.PutUint16(value, 1)
+	value := make([]byte, 22)
+	bcc.GetHostByteOrder().PutUint16(value, 1)
 
 	if err := xf.blacklist.Set(id, value); err != nil {
 		return coderror.Newf(codes.BCCSetToTableError, "set new protocol to blacklist: %v", err)
