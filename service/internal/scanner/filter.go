@@ -1,7 +1,10 @@
 package scanner
 
 import (
+	"context"
+	"encoding/binary"
 	"fmt"
+	"net"
 
 	"github.com/iovisor/gobpf/bcc"
 	"github.com/kimbellG/packet-filter/service/internal/controller"
@@ -52,12 +55,14 @@ func getIDOfProtocol(proto controller.IPProto) ([]byte, error) {
 }
 
 type XDPFilter struct {
-	blacklist *bcc.Table
+	protoBlacklist  *bcc.Table
+	subnetBlacklist *bcc.Table
 }
 
-func NewXDPFilter(blacklist *bcc.Table) *XDPFilter {
+func NewXDPFilter(blackProto, blackSubnet *bcc.Table) *XDPFilter {
 	return &XDPFilter{
-		blacklist: blacklist,
+		protoBlacklist:  blackProto,
+		subnetBlacklist: blackSubnet,
 	}
 }
 
@@ -70,7 +75,7 @@ func (xf *XDPFilter) Block(protocol controller.IPProto) error {
 	value := make([]byte, 22)
 	bcc.GetHostByteOrder().PutUint16(value, 1)
 
-	if err := xf.blacklist.Set(id, value); err != nil {
+	if err := xf.protoBlacklist.Set(id, value); err != nil {
 		return coderror.Newf(codes.BCCSetToTableError, "set new protocol to blacklist: %v", err)
 	}
 
@@ -83,8 +88,69 @@ func (xf *XDPFilter) UnBlock(protocol controller.IPProto) error {
 		return coderror.Errorf(err, "get id of protocol: %v", err)
 	}
 
-	if err := xf.blacklist.Delete(id); err != nil {
+	if err := xf.protoBlacklist.Delete(id); err != nil {
 		return coderror.Newf(codes.BCCDeleteFromTableError, "delete protocol from talbe: %v", err)
+	}
+
+	return nil
+}
+
+func (xf *XDPFilter) BlockSubnet(ctx context.Context, addr net.IP) (uint64, error) {
+	select {
+	case <-ctx.Done():
+		// TODO: Set a valid error code
+		return 0, coderror.Newf(codes.Unknown, "stopped by context")
+	default:
+		return xf.blockSubnet(addr)
+	}
+}
+
+func (xf *XDPFilter) blockSubnet(addr net.IP) (uint64, error) {
+	addrBytes := xf.addrInBytes(addr)
+
+	count, err := xf.subnetBlacklist.Get(addrBytes)
+	if err != nil {
+		return xf.addSubnetToBlacklist(addrBytes)
+	}
+
+	return binary.BigEndian.Uint64(count), nil
+}
+
+func (xf *XDPFilter) addrInBytes(addr net.IP) []byte {
+	addrBytes := make([]byte, 4)
+
+	binary.BigEndian.PutUint32(addrBytes, binary.BigEndian.Uint32(addr[12:16]))
+
+	return addrBytes
+}
+
+func (xf *XDPFilter) addSubnetToBlacklist(addr []byte) (uint64, error) {
+	count := make([]byte, 8)
+
+	binary.BigEndian.PutUint32(count, 0)
+
+	if err := xf.subnetBlacklist.Set(addr, count); err != nil {
+		return 0, coderror.Newf(codes.BCCSetToTableError, "set new subnet to the blacklist: %v", err)
+	}
+
+	return 0, nil
+}
+
+func (xf *XDPFilter) UnblockSubnet(ctx context.Context, addr net.IP) error {
+	select {
+	case <-ctx.Done():
+		// TODO: Set a valid error code
+		return coderror.Newf(codes.Unknown, "stopped by context")
+	default:
+		return xf.unblockSubnet(addr)
+	}
+}
+
+func (xf *XDPFilter) unblockSubnet(addr net.IP) error {
+	addrBytes := xf.addrInBytes(addr)
+
+	if err := xf.subnetBlacklist.Delete(addrBytes); err != nil {
+		return coderror.Newf(codes.BCCDeleteFromTableError, "delete from bcc table: %v", err)
 	}
 
 	return nil
