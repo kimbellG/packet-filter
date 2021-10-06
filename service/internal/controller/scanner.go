@@ -1,6 +1,9 @@
 package controller
 
-import "context"
+import (
+	"context"
+	"net"
+)
 
 //Scanner is interface for communicative beetween controller and package scanner
 type Scanner interface {
@@ -41,6 +44,9 @@ const (
 type Filter interface {
 	Block(protocol IPProto) error
 	UnBlock(protocol IPProto) error
+
+	BlockSubnet(ctx context.Context, addr net.IP) (uint64, error)
+	UnblockSubnet(ctx context.Context, addr net.IP) error
 }
 
 //Count is interface for count controll

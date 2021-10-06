@@ -1,6 +1,8 @@
 package controller
 
-import "context"
+import (
+	"context"
+)
 
 type Controller interface {
 	GetCount(ctx context.Context) (uint64, error)
